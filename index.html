@@ -52,6 +52,25 @@
     dici("Manca il link della web app: apri il file <b>config.js</b> e incolla quello che trovi nel gestionale, sezione «Aziende» › «App installabile».");
     return;
   }
+  var dest = url + (a ? "?a=" + encodeURIComponent(a) : "");
+  /* Safari e tutti i browser di iPhone/iPad bloccano i cookie di Google dentro una cornice (errore 401):
+     lì il gestionale si apre direttamente, e si installa da quella pagina con «Aggiungi alla schermata Home». */
+  var ua = navigator.userAgent || "", ios = /iP(hone|ad|od)/.test(ua) || (/Macintosh/.test(ua) && navigator.maxTouchPoints > 1);
+  var soloWebKit = ios || (/AppleWebKit/.test(ua) && /Safari/.test(ua) && !/Chrome|Chromium|CriOS|Edg|OPR|Android/.test(ua));
+  function diretto(perche) {
+    if (navigator.standalone) { /* icona del guscio già installata su iPhone: il gestionale va aperto in Safari */
+      dici((perche || "") + "Su iPhone il gestionale si apre in Safari: <a href=\"" + dest + "\" target=\"_blank\" rel=\"noopener\">apri il gestionale</a>, poi Condividi › «Aggiungi alla schermata Home» e usa quella icona al posto di questa.");
+      return;
+    }
+    dici((perche || "") + "Apertura…");
+    location.replace(dest);
+  }
+  if (soloWebKit) { diretto(""); return; }
+  /* negli altri browser: a tutto schermo nella cornice; se la pagina non dà segno di vita (cookie bloccati), apertura diretta */
+  var pronto = false, guardia = null;
+  window.addEventListener("message", function (ev) {
+    if (ev.data && ev.data.oliveta === "pronto") { pronto = true; clearTimeout(guardia); splash.classList.add("via"); setTimeout(function () { splash.hidden = true; }, 300); }
+  });
   function apri() {
     if (!navigator.onLine) {
       dici("Senza rete: il gestionale si apre appena torna la connessione.");
@@ -59,9 +78,9 @@
       return;
     }
     dici("Apertura…");
-    app.src = url + (a ? "?a=" + encodeURIComponent(a) : "");
-    var lento = setTimeout(function () { dici("Ci vuole più del solito… <button type=\"button\" onclick=\"location.reload()\">Riprova</button>"); }, 20000);
-    app.addEventListener("load", function () { clearTimeout(lento); splash.classList.add("via"); setTimeout(function () { splash.hidden = true; }, 300); }, { once: true });
+    app.src = dest;
+    guardia = setTimeout(function () { if (!pronto) diretto("Il browser non permette di aprirlo qui dentro. "); }, 25000);
+    app.addEventListener("load", function () { clearTimeout(guardia); guardia = setTimeout(function () { if (!pronto) diretto("Il browser non permette di aprirlo qui dentro. "); }, 10000); }, { once: true });
   }
   apri();
   if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(function () {});

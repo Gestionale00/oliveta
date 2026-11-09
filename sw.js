@@ -1,6 +1,6 @@
 /* Gestionale Oliveta · service worker del guscio: tiene in memoria solo i file di questa pagina
    (il gestionale vero arriva da Google Apps Script e non passa da qui). Prima la rete, poi la copia. */
-const CACHE = "oliveta-guscio-1";
+const CACHE = "oliveta-guscio-2";
 const FILE = ["./", "index.html", "config.js", "manifest.webmanifest", "icon-192.png", "icon-512.png", "icon-maskable-512.png", "apple-touch-icon.png", "favicon.png"];
 
 self.addEventListener("install", (e) => {
