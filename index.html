@@ -1,0 +1,71 @@
+<!doctype html>
+<html lang="it">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Gestionale Oliveta</title>
+<meta name="description" content="Gestionale Oliveta: consegne, rese e registro dei trattamenti.">
+<meta name="theme-color" content="#2f4538">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" type="image/png" href="favicon.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Oliveta">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<script src="config.js"></script>
+<style>
+  html, body { margin: 0; height: 100%; background: #2f4538; overflow: hidden; }
+  body { font: 15px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: #fff; }
+  /* il gestionale occupa tutto lo schermo, tolte le zone di notch e barra di sistema */
+  #app { position: fixed; top: env(safe-area-inset-top); right: env(safe-area-inset-right); bottom: env(safe-area-inset-bottom); left: env(safe-area-inset-left);
+         width: calc(100% - env(safe-area-inset-left) - env(safe-area-inset-right)); height: calc(100% - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+         border: 0; background: #f3f5f0; }
+  #fondo { position: fixed; left: 0; right: 0; bottom: 0; height: env(safe-area-inset-bottom); background: #ffffff; }
+  #splash { position: fixed; inset: 0; display: grid; place-content: center; justify-items: center; gap: 10px; text-align: center; padding: 24px; background: #2f4538; z-index: 2; transition: opacity .25s; }
+  #splash img { width: 96px; height: 96px; border-radius: 22px; }
+  #splash h1 { margin: 6px 0 0; font-size: 20px; font-weight: 650; letter-spacing: .02em; }
+  #stato { margin: 0; opacity: .85; max-width: 34em; }
+  #stato a, #stato button { color: #fff; }
+  #splash button { margin-top: 8px; font: inherit; padding: 8px 16px; border-radius: 8px; border: 1px solid rgba(255,255,255,.6); background: transparent; color: #fff; cursor: pointer; }
+  .via { opacity: 0; pointer-events: none; }
+</style>
+</head>
+<body>
+<div id="fondo"></div>
+<div id="splash" role="status" aria-live="polite">
+  <img src="icon-192.png" alt="">
+  <h1>Gestionale Oliveta</h1>
+  <p id="stato">Apertura…</p>
+</div>
+<iframe id="app" title="Gestionale Oliveta" allow="clipboard-read; clipboard-write; geolocation; camera; fullscreen"></iframe>
+<script>
+(function () {
+  var stato = document.getElementById("stato"), splash = document.getElementById("splash"), app = document.getElementById("app");
+  function dici(html) { stato.innerHTML = html; }
+  /* codice dell'azienda dal link personale (…/?a=codice); se manca, l'ultimo usato su questo dispositivo */
+  var a = "";
+  try { a = (new URLSearchParams(location.search).get("a") || "").toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 12); } catch (e) {}
+  try { if (a) localStorage.setItem("oliveta-a", a); else a = localStorage.getItem("oliveta-a") || ""; } catch (e) {}
+  var url = String(window.OLIVETA_EXEC || "").trim();
+  if (!/^https:\/\/script\.google\.com\/(a\/[^/]+\/)?macros\/s\/[\w-]+\/exec$/.test(url)) {
+    dici("Manca il link della web app: apri il file <b>config.js</b> e incolla quello che trovi nel gestionale, sezione «Aziende» › «App installabile».");
+    return;
+  }
+  function apri() {
+    if (!navigator.onLine) {
+      dici("Senza rete: il gestionale si apre appena torna la connessione.");
+      window.addEventListener("online", function () { location.reload(); }, { once: true });
+      return;
+    }
+    dici("Apertura…");
+    app.src = url + (a ? "?a=" + encodeURIComponent(a) : "");
+    var lento = setTimeout(function () { dici("Ci vuole più del solito… <button type=\"button\" onclick=\"location.reload()\">Riprova</button>"); }, 20000);
+    app.addEventListener("load", function () { clearTimeout(lento); splash.classList.add("via"); setTimeout(function () { splash.hidden = true; }, 300); }, { once: true });
+  }
+  apri();
+  if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(function () {});
+})();
+</script>
+</body>
+</html>
