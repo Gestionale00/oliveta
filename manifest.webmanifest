@@ -1,7 +1,7 @@
 {
-  "name": "Gestionale Oliveta",
-  "short_name": "Oliveta",
-  "description": "Consegne di olive, rese e registro dei trattamenti.",
+  "name": "Gestionale agricolo",
+  "short_name": "Gestionale",
+  "description": "Campi, colture, lavori, trattamenti e quaderno di campagna dell'azienda agricola.",
   "lang": "it",
   "start_url": "./",
   "scope": "./",
@@ -10,8 +10,23 @@
   "background_color": "#2f4538",
   "theme_color": "#2f4538",
   "icons": [
-    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    {
+      "src": "icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
   ]
 }
