@@ -35,3 +35,5 @@ Contiene solo l'icona e il link della web app: i dati restano nei Fogli Google, 
 - Per aprirsi serve la connessione: la pagina del gestionale arriva da Google ogni volta. Dentro il gestionale restano la copia dei dati e la coda dei salvataggi.
 - Con un account Gmail gratuito Google può mostrare in alto la scritta «Questa applicazione è stata creata da un utente di Google Apps Script».
 - Se cambi il link della web app (nuovo deployment invece di «Nuova versione»), aggiorna **config.js**.
+- Negli aggiornamenti del guscio carica solo i file nuovi: **non sostituire config.js**, che contiene il tuo link.
+- Se il link in config.js non va bene, la pagina dice che cosa ha trovato e quale link serve.

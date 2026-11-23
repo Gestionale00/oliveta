@@ -13,7 +13,6 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-title" content="Gestionale">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<script src="config.js"></script>
 <style>
   html, body { margin: 0; height: 100%; background: #2f4538; overflow: hidden; }
   body { font: 15px/1.4 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; color: #fff; }
@@ -47,11 +46,29 @@
   var a = "";
   try { a = (new URLSearchParams(location.search).get("a") || "").toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 12); } catch (e) {}
   try { if (a) localStorage.setItem("oliveta-a", a); else a = localStorage.getItem("oliveta-a") || ""; } catch (e) {}
-  var url = String(window.OLIVETA_EXEC || "").trim();
-  if (!/^https:\/\/script\.google\.com\/(a\/[^/]+\/)?macros\/s\/[\w-]+\/exec$/.test(url)) {
-    dici("Manca il link della web app: apri il file <b>config.js</b> e incolla quello che trovi nel gestionale, sezione «Aziende» › «App installabile».");
+  /* config.js si legge sempre fresco (GitHub Pages lo tiene in memoria fino a 10 minuti dopo una modifica) */
+  var cfg = document.createElement("script");
+  cfg.src = "config.js?t=" + Date.now();
+  cfg.onload = function () { avvia(true); };
+  cfg.onerror = function () { avvia(false); };
+  document.head.appendChild(cfg);
+  function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c]; }); }
+  function avvia(letto) {
+  var grezzo = String(window.OLIVETA_EXEC || "").replace(/\s+/g, "");
+  /* accetta anche il link degli account Google Workspace, una barra finale e un ?a=codice in coda */
+  var m = grezzo.match(/^(https:\/\/script\.google\.com\/(?:macros|a\/macros\/[^\/?#]+|a\/[^\/?#]+\/macros)\/s\/[\w-]+\/exec)\/?([?#].*)?$/);
+  if (!m) {
+    var giusto = "serve quello sotto «Link della web app, da scrivere nel file config.js» (gestionale › Aziende › App installabile), che inizia con <b>https://script.google.com/</b> e finisce con <b>/exec</b>";
+    if (!letto) dici("Non trovo il file <b>config.js</b> su GitHub: deve stare nel repository accanto a index.html.");
+    else if (window.OLIVETA_EXEC === undefined) dici("Il file <b>config.js</b> ha un errore di scrittura. Deve contenere una riga sola, con il link fra le virgolette: <b>window.OLIVETA_EXEC = \"https://script.google.com/…/exec\";</b>");
+    else if (!grezzo || /INCOLLA-QUI/.test(grezzo)) dici("Manca il link della web app nel file <b>config.js</b>: " + giusto + ". Se l'hai appena salvato su GitHub, aspetta un paio di minuti e riapri.");
+    else if (/github\.io/i.test(grezzo)) dici("In <b>config.js</b> c'è l'indirizzo del guscio (github.io): " + giusto + ".");
+    else if (/\/dev\/?$/.test(grezzo)) dici("In <b>config.js</b> c'è il link di prova (finisce con /dev): " + giusto + ".");
+    else dici("Il link in <b>config.js</b> non va bene: «" + esc(grezzo.slice(0, 120)) + "». " + giusto.charAt(0).toUpperCase() + giusto.slice(1) + ".");
     return;
   }
+  var url = m[1];
+  if (!a && m[2]) { try { a = (new URLSearchParams(m[2].replace(/^[?#]/, "")).get("a") || "").toLowerCase().replace(/[^a-z0-9]/g, "").slice(0, 12); } catch (e) {} }
   var dest = url + (a ? "?a=" + encodeURIComponent(a) : "");
   /* Safari e tutti i browser di iPhone/iPad bloccano i cookie di Google dentro una cornice (errore 401):
      lì il gestionale si apre direttamente, e si installa da quella pagina con «Aggiungi alla schermata Home». */
@@ -83,6 +100,7 @@
     app.addEventListener("load", function () { clearTimeout(guardia); guardia = setTimeout(function () { if (!pronto) diretto("Il browser non permette di aprirlo qui dentro. "); }, 10000); }, { once: true });
   }
   apri();
+  }
   if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js").catch(function () {});
 })();
 </script>
