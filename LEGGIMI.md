@@ -1,4 +1,4 @@
-# Gestionale Oliveta — app installabile (pagina «guscio»)
+# Gestionale agricolo — app installabile (pagina «guscio»)
 
 Questa cartella è una piccola pagina che apre il gestionale (la web app di Google Apps Script) a tutto schermo, con nome e icona. Così si installa su PC, Android e iPhone.
 Contiene solo l'icona e il link della web app: i dati restano nei Fogli Google, protetti dal PIN.
@@ -26,10 +26,12 @@ Contiene solo l'icona e il link della web app: i dati restano nei Fogli Google, 
 
 - **PC (Chrome o Edge):** apri il link e fai clic sull'icona «Installa» nella barra dell'indirizzo, oppure ⋮ › «Installa Gestionale Oliveta».
 - **Android (Chrome):** apri il link, poi ⋮ › **Installa app** (o «Aggiungi a schermata Home»).
-- **iPhone/iPad (Safari):** apri il link, poi Condividi › **Aggiungi alla schermata Home**. Al primo avvio dall'icona chiede codice azienda e PIN, perché su iPhone l'app installata ha una memoria separata da Safari.
+- **iPhone/iPad:** Safari (e ogni browser su iPhone) non permette di aprire il gestionale dentro questa pagina, quindi il link apre direttamente la pagina del gestionale. Da lì: Condividi › **Aggiungi alla schermata Home**: si apre a tutto schermo. L'icona può essere un'anteprima della pagina.
+- **Safari sul Mac:** si apre direttamente la pagina del gestionale, come su iPhone.
 
 ## Da sapere
 
+- Se in un browser la pagina dentro l'app non si apre (cookie di Google bloccati), dopo qualche secondo il gestionale si apre direttamente.
 - Per aprirsi serve la connessione: la pagina del gestionale arriva da Google ogni volta. Dentro il gestionale restano la copia dei dati e la coda dei salvataggi.
 - Con un account Gmail gratuito Google può mostrare in alto la scritta «Questa applicazione è stata creata da un utente di Google Apps Script».
 - Se cambi il link della web app (nuovo deployment invece di «Nuova versione»), aggiorna **config.js**.
